@@ -1,0 +1,7 @@
+export enum EPurchaseStatus {
+  CREATED = 'CREATED',
+  AWAITING_PAYMENT = 'AWAITING_PAYMENT',
+  PAID = 'PAID',
+  SENT = 'SENT',
+  COMPLETED = 'COMPLETED',
+}
