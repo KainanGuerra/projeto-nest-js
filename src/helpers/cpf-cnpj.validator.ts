@@ -2,14 +2,13 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import * as cpfCnpjValidator from 'cpf-cnpj-validator';
+import { cpf, cnpj } from 'cpf-cnpj-validator';
 
 @ValidatorConstraint({ name: 'cpfCnpj', async: false })
 export class CpfCnpjValidator implements ValidatorConstraintInterface {
-  validate(value: string) {
-    const isCPF = cpfCnpjValidator.cpf.isValid(value);
-    const isCNPJ = cpfCnpjValidator.cnpj.isValid(value);
-
+  validate(document: string) {
+    const isCPF = cpf.isValid(document);
+    const isCNPJ = cnpj.isValid(document);
     return isCPF || isCNPJ;
   }
 

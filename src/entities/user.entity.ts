@@ -7,7 +7,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { hashSync } from 'bcrypt';
-@Entity()
+import { DocumentMasker } from 'src/helpers/document.masker';
+import { EmailMasker } from 'src/helpers/email.masker';
+@Entity({ name: 'users' })
 export class UsersEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -15,7 +17,7 @@ export class UsersEntity {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -27,7 +29,7 @@ export class UsersEntity {
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   updatedAt: Date;
 
-  @Column()
+  @Column({ unique: true })
   document: string;
 
   @Column()
@@ -36,11 +38,17 @@ export class UsersEntity {
   @Column()
   masked_email: string;
 
-  @Column()
+  @Column({ default: 0 })
   sales_count: number;
 
   @BeforeInsert()
   hashPassword() {
     this.password = hashSync(this.password, 10);
+  }
+
+  @BeforeInsert()
+  maskData() {
+    this.masked_document = DocumentMasker.maskCpf(this.document);
+    this.masked_email = EmailMasker.mask(this.email);
   }
 }

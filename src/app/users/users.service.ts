@@ -15,9 +15,11 @@ export class UsersService {
   async findAll() {
     return await this.usersRepository.find({ select: ['id', 'email', 'name'] });
   }
-  async findOneOrFail(id: string) {
+  async findOneOrFail(conditions: { id?: string; email?: string }) {
     try {
-      return await await this.usersRepository.findOneByOrFail({ id });
+      return await await this.usersRepository.findOneByOrFail({
+        ...conditions,
+      });
     } catch (err) {
       throw new NotFoundException(err.message);
     }
@@ -25,13 +27,14 @@ export class UsersService {
 
   async store(data: CreateUserDTO) {
     try {
-      console.log('HERE');
-      console.log(this.usersRepository);
       const user = await this.usersRepository.create(data);
-      console.log(user);
       return await this.usersRepository.save(user);
     } catch (err) {
-      console.log(err.message);
+      return {
+        message: 'Error',
+        err: `${err.message}`,
+        status: 500,
+      };
     }
   }
 
