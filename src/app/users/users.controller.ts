@@ -12,9 +12,9 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDTO } from 'src/utils/dto/create-user.dto';
-import { UpdateUserDTO } from 'src/utils/dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateUserDTO } from 'src/utils/dto/users/create-user.dto';
+import { UpdateUserDTO } from 'src/utils/dto/users/update-user.dto';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('api/v1/users')
@@ -50,10 +50,7 @@ export class UsersController {
   }
 
   @Put(':id')
-  async update(
-    @Param('id', new ParseUUIDPipe()) id: string,
-    @Body() body: UpdateUserDTO,
-  ) {
+  async update(@Param('id') id: string, @Body() body: UpdateUserDTO) {
     return await this.usersService.update(id, body);
   }
 

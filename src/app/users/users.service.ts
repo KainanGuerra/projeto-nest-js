@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateUserDTO } from 'src/utils/dto/create-user.dto';
-import { UpdateUserDTO } from 'src/utils/dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { UsersEntity } from '../../entities/user.entity';
+import { CreateUserDTO } from 'src/utils/dto/users/create-user.dto';
+import { UpdateUserDTO } from 'src/utils/dto/users/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -45,6 +45,6 @@ export class UsersService {
   }
   async destroy(id: string) {
     await this.usersRepository.findOneByOrFail({ id });
-    this.usersRepository.softDelete({ id });
+    return await this.usersRepository.softDelete({ id });
   }
 }
