@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseUUIDPipe,
   Post,
   Put,
   UseGuards,
@@ -56,7 +55,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async destroy(@Param('id', new ParseUUIDPipe()) id: string) {
+  async destroy(@Param('id') id: string) {
     return this.usersService.destroy(id);
   }
 }

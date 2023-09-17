@@ -1,14 +1,26 @@
 import { EPurchaseStatus } from 'src/utils/enums/purchase-dictionary.enum';
-import { TPurchaseItems } from 'src/utils/types/payload.types';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UsersEntity } from './user.entity';
 
-@Entity()
-export class Purchases {
+@Entity({ name: 'purchases' })
+export class PurchasesEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'jsonb' })
-  products: TPurchaseItems;
+  @Column({ type: 'integer', array: true, default: [] })
+  products: number[];
+
+  @Column()
+  discount: number;
+
+  @Column({ name: 'raw_value' })
+  rawValue: number;
 
   @Column({ name: 'final_value' })
   finalValue: number;
@@ -19,9 +31,7 @@ export class Purchases {
   @Column({ name: 'delivery_address' })
   deliveryAddress: string;
 
-  @Column({ name: 'client_id' })
-  clientId: string;
-
-  @Column()
-  discount: number;
+  @ManyToOne(() => UsersEntity)
+  @JoinColumn({ name: 'client_id', referencedColumnName: 'id' })
+  user: UsersEntity;
 }

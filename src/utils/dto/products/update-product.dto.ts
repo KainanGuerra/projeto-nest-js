@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 import { EProductsTypes } from 'src/utils/enums/products-types.enum';
+import { ESneakersBrands } from 'src/utils/enums/sneakers-brands.enum';
 
 export class UpdateProductDTO {
   @IsNotEmpty()
@@ -7,7 +8,7 @@ export class UpdateProductDTO {
   name?: string;
 
   @IsString()
-  brand?: string;
+  brand?: ESneakersBrands;
 
   @IsNumber()
   value?: number;

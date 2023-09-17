@@ -16,8 +16,8 @@ export class ProductsService {
     return await this.productsRepository.find();
   }
 
-  async find() {
-    return await this.productsRepository.findAndCount();
+  async find(id: any) {
+    return await this.productsRepository.findOneOrFail({ where: { id } });
   }
 
   async create(data: CreateProductDTO) {
@@ -33,13 +33,13 @@ export class ProductsService {
     }
   }
 
-  async update(id: string, data: UpdateProductDTO) {
-    const user = await this.productsRepository.findOneByOrFail({ id });
+  async update(id: any, data: UpdateProductDTO) {
+    const user = await this.productsRepository.findOneOrFail({ where: { id } });
     this.productsRepository.merge(user, data);
     return this.productsRepository.save(user);
   }
 
-  async delete(id: string) {
+  async delete(id: any) {
     await this.productsRepository.findOneByOrFail({ id });
     return this.productsRepository.softDelete({ id });
   }

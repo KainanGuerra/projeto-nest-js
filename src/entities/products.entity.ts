@@ -1,13 +1,14 @@
 import { EProductsTypes } from 'src/utils/enums/products-types.enum';
+import { ESneakersBrands } from 'src/utils/enums/sneakers-brands.enum';
 import { Entity } from 'typeorm';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity()
+@Entity({ name: 'products' })
 export class ProductsEntity {
   @PrimaryGeneratedColumn()
   id: string;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @Column()
@@ -16,9 +17,9 @@ export class ProductsEntity {
   @Column()
   type: EProductsTypes;
 
-  @Column({ default: 'unknown' })
-  brand: string;
+  @Column()
+  brand: ESneakersBrands;
 
-  @Column({ default: 'undefined' })
+  @Column()
   color: string;
 }
