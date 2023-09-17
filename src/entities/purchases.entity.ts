@@ -1,4 +1,3 @@
-import { EPurchaseStatus } from 'src/utils/enums/purchase-dictionary.enum';
 import {
   Column,
   Entity,
@@ -7,6 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
+import { EPurchaseStatus } from 'src/utils/enums/purchase-status-dictionary.enum';
 
 @Entity({ name: 'purchases' })
 export class PurchasesEntity {
@@ -16,13 +16,13 @@ export class PurchasesEntity {
   @Column({ type: 'integer', array: true, default: [] })
   products: number[];
 
-  @Column()
+  @Column({ type: 'decimal', default: 0 })
   discount: number;
 
   @Column({ name: 'raw_value' })
   rawValue: number;
 
-  @Column({ name: 'final_value' })
+  @Column({ type: 'decimal', name: 'final_value' })
   finalValue: number;
 
   @Column()

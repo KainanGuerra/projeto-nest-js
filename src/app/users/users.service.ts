@@ -17,7 +17,7 @@ export class UsersService {
   }
   async findOneOrFail(conditions: { id?: string; email?: string }) {
     try {
-      return await await this.usersRepository.findOneByOrFail({
+      return await this.usersRepository.findOneByOrFail({
         ...conditions,
       });
     } catch (err) {

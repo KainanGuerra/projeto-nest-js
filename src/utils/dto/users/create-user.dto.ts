@@ -6,7 +6,7 @@ import {
   Validate,
 } from 'class-validator';
 import { CpfCnpjValidator } from 'src/helpers/cpf-cnpj.validator';
-import { MESSAGE_ERROR } from 'src/helpers/messages/error.messages';
+import { MESSAGE_ERROR } from 'src/helpers/messages/error-messages.helper';
 import { regexHelper } from 'src/helpers/regex.helpers';
 
 export class CreateUserDTO {

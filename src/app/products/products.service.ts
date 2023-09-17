@@ -43,4 +43,12 @@ export class ProductsService {
     await this.productsRepository.findOneByOrFail({ id });
     return this.productsRepository.softDelete({ id });
   }
+
+  async findProductsByIds(ids: number[]) {
+    return await this.productsRepository
+      .createQueryBuilder('products')
+      .select()
+      .whereInIds(ids)
+      .getMany();
+  }
 }
