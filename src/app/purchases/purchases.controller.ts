@@ -27,7 +27,7 @@ export class PurchasesController {
   }
 
   @Get('products')
-  async findAllP() {
+  async getAllProducts() {
     return this.purchasesService.findAllProducts();
   }
 }

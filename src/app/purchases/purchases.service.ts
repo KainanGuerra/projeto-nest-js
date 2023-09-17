@@ -1,9 +1,4 @@
-import {
-  Inject,
-  Injectable,
-  UnauthorizedException,
-  forwardRef,
-} from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchasesEntity } from 'src/entities/purchases.entity';
 import { Repository } from 'typeorm';
@@ -30,7 +25,7 @@ export class PurchasesService {
     return await this.purchasesRepository.find();
   }
 
-  async store({ query, data, req }: IPurchaseProducts) {
+  async store({ query, data }: IPurchaseProducts) {
     try {
       const { id } = query;
       const user = await this.usersService.findOneOrFail({ id });
