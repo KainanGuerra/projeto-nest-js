@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductsEntity } from 'src/entities/products.entity';
+import { HFilterFormatter } from 'src/helpers/filter-format-query.helper';
 import { CreateProductDTO } from 'src/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/utils/dto/products/update-product.dto';
+import { IFilterProductsByParams } from 'src/utils/interfaces/filter-products.interface';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -50,5 +52,38 @@ export class ProductsService {
       .select()
       .whereInIds(ids)
       .getMany();
+  }
+
+  async filter(query: IFilterProductsByParams) {
+    let { limit } = query;
+
+    if (!limit) {
+      limit = 15;
+    } else {
+      limit = limit < 15 ? 15 : limit;
+      limit = limit > 100 ? 100 : limit;
+    }
+
+    const { page } = query;
+
+    const currentPage = Number(page > 0 ? page : 1);
+    const offset = limit * (currentPage - 1);
+    const filters = HFilterFormatter.formatQueryFilterForProduct(query);
+    const productsFiltered = await this.productsRepository.findAndCount({
+      take: limit,
+      skip: offset,
+      where: filters,
+      order: {
+        id: 'DESC',
+      },
+    });
+
+    return {
+      page: currentPage,
+      totalPages: Math.ceil(productsFiltered[1] / limit),
+      docsShown: productsFiltered[0].length,
+      totalDocs: productsFiltered[1],
+      docs: productsFiltered,
+    };
   }
 }

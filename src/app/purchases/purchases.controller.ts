@@ -25,9 +25,4 @@ export class PurchasesController {
     await this.authService.authorizeUser(req);
     return this.purchasesService.store(payload);
   }
-
-  @Get('products')
-  async getAllProducts() {
-    return this.purchasesService.findAllProducts();
-  }
 }

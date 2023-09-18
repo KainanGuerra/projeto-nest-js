@@ -6,10 +6,13 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { CreateProductDTO } from 'src/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/utils/dto/products/update-product.dto';
+import { CreateProductDTO } from 'src/utils/dto/products/create-product.dto';
+import { IFilterProductsByParams } from 'src/utils/interfaces/filter-products.interface';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -23,6 +26,14 @@ export class ProductsController {
   @Get('find')
   async find(@Param('id') id: number) {
     return await this.productsService.find(id);
+  }
+
+  @Get('filter')
+  async filter(
+    @Query(new ValidationPipe({ transform: true }))
+    query: IFilterProductsByParams,
+  ) {
+    return await this.productsService.filter(query);
   }
 
   @Post()
