@@ -7,13 +7,16 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { UpdateProductDTO } from 'src/utils/dto/products/update-product.dto';
 import { CreateProductDTO } from 'src/utils/dto/products/create-product.dto';
 import { IFilterProductsByParams } from 'src/utils/interfaces/filter-products.interface';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('api/v1/products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}

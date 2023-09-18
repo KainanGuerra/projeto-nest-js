@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PurchasesService } from './purchases.service';
 import { PurchaseProductsPayloadDTO } from 'src/utils/dto/purchases/purchase-items-payload.dto';
 import { AuthService } from 'src/auth/auth.service';
+import { AuthGuard } from '@nestjs/passport';
 
+@UseGuards(AuthGuard('jwt'))
 @Controller('api/v1/purchases')
 export class PurchasesController {
   constructor(
