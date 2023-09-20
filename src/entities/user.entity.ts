@@ -9,6 +9,7 @@ import {
 import { hashSync } from 'bcrypt';
 import { DocumentMasker } from 'src/helpers/document.masker';
 import { EmailMasker } from 'src/helpers/email.masker';
+import { ERolesToUsers } from 'src/utils/enums/roles-to-users.enum';
 @Entity({ name: 'users' })
 export class UsersEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -31,6 +32,9 @@ export class UsersEntity {
 
   @Column({ unique: true })
   document: string;
+
+  @Column({ default: ERolesToUsers.CLIENT })
+  role: ERolesToUsers;
 
   @Column()
   masked_document: string;
