@@ -9,6 +9,7 @@ import { IPurchaseProducts } from 'src/utils/interfaces/purchase-products.interf
 import { HProductsFunctions } from 'src/helpers/calculators/products-functions.helper';
 import { PurchaseItemsCreateInstanceDTO } from 'src/utils/dto/purchases/purchase-items-create-instance.dto';
 import { EPurchaseStatus } from 'src/utils/enums/purchase-status-dictionary.enum';
+import { UpdateUserDTO } from 'src/utils/dto/users/update-user.dto';
 
 @Injectable()
 export class PurchasesService {
@@ -47,6 +48,10 @@ export class PurchasesService {
         user,
       };
       const body = await this.purchasesRepository.create([purchaseToBeCreated]);
+      const increasesSalesCount: UpdateUserDTO = {
+        sales_count: user.sales_count++,
+      };
+      await this.usersService.update(user.id, increasesSalesCount);
       return await this.purchasesRepository.save(body);
     } catch (err) {
       throw new AppError(`Something went wrong: ${err.message}`, 400);
