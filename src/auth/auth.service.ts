@@ -4,6 +4,7 @@ import { UsersEntity } from 'src/entities/user.entity';
 import { compareSync } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { AppError } from 'src/shared/AppError';
+import { TValidateUserBody } from 'src/utils/types/validate-user-body.type';
 
 @Injectable()
 export class AuthService {
@@ -12,15 +13,21 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async login(user) {
+  async login(user: UsersEntity) {
     const payload = { sub: user.id, email: user.email };
-
     return {
       token: this.jwtService.sign(payload),
+      user: {
+        id: user.id,
+        name: user.name,
+        email: payload.email,
+        role: user.role,
+        document: user.masked_document,
+      },
     };
   }
 
-  async validateUser(email: string, password: string) {
+  async validateUser({ email, password }: TValidateUserBody) {
     let user: UsersEntity;
     try {
       user = await this.userService.findOneOrFail({ email });
