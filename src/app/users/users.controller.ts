@@ -8,6 +8,8 @@ import {
   Param,
   Post,
   Put,
+  Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
@@ -43,10 +45,15 @@ export class UsersController {
     return await this.usersService.store(body);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Get('/id')
-  async show(@Param('id') id: string) {
+  async findById(@Query('id') id: string) {
     return await this.usersService.findOneOrFail({ id });
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/token')
+  async show(@Req() req: any) {
+    return await this.usersService.findOneOrFail({ id: req.user.id });
   }
 
   @UseGuards(AuthGuard('jwt'))

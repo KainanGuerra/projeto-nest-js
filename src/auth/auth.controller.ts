@@ -19,9 +19,9 @@ export class AuthController {
     return await this.authService.validateUser(body);
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get('user')
-  async getUserByToken(@Req() req: any) {
-    return req.user;
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get('user')
+  // async getUserByToken(@Req() req: any) {
+  //   return req.user;
+  // }
 }
