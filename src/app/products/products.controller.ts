@@ -27,7 +27,7 @@ export class ProductsController {
   }
 
   @Get('find')
-  async find(@Param('id') id: number) {
+  async find(@Query('id') id: number) {
     return await this.productsService.find(id);
   }
 
