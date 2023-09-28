@@ -10,6 +10,8 @@ import { HProductsFunctions } from 'src/helpers/calculators/products-functions.h
 import { PurchaseItemsCreateInstanceDTO } from 'src/utils/dto/purchases/purchase-items-create-instance.dto';
 import { EPurchaseStatus } from 'src/utils/enums/purchase-status-dictionary.enum';
 import { UpdateUserDTO } from 'src/utils/dto/users/update-user.dto';
+import { UpdatePurchaseStatusDTO } from 'src/utils/dto/purchases/update-purchase-status.dto';
+import { ErrorHandler } from 'src/shared/ErrorHandler';
 
 @Injectable()
 export class PurchasesService {
@@ -20,6 +22,7 @@ export class PurchasesService {
     private readonly productsService: ProductsService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
+    private readonly errorHandler = new ErrorHandler(),
   ) {}
 
   async findAll() {
@@ -63,6 +66,20 @@ export class PurchasesService {
       return await this.productsService.listAll();
     } catch (err) {
       throw new AppError(err.message, 501);
+    }
+  }
+
+  async updatePurchase({ id, status }: UpdatePurchaseStatusDTO) {
+    try {
+      const purchase = await this.purchasesRepository.findOneOrFail({
+        where: id,
+      });
+      if (purchase.status != EPurchaseStatus.AWAITING_PAYMENT) {
+        throw new AppError(`The purchase with id ${id} has been `, 400);
+      }
+      return await this.purchasesRepository.merge(purchase, { status });
+    } catch (err) {
+      this.errorHandler.attributeError(err);
     }
   }
 }

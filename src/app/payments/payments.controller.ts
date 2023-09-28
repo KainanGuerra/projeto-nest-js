@@ -9,10 +9,12 @@ export class PaymentsController {
 
   @Post()
   async processPurchaseOnAwaitingPayment(
-    @Query('payment_id') id: any,
+    @Query('purchase_id') purchase_id: number,
     @Req() req: any,
   ) {
-    console.log(req, id);
-    return null;
+    return await this.paymentsService.executeConciliation({
+      user: req.user,
+      purchase_id,
+    });
   }
 }

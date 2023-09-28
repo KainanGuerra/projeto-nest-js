@@ -24,6 +24,8 @@ export class CreateUserDTO {
   password: string;
 
   @IsString()
-  @Validate(CpfCnpjValidator)
+  @Validate(CpfCnpjValidator, {
+    message: MESSAGE_ERROR.DOCUMENT_ALREADY_IN_USE,
+  })
   document: string;
 }
