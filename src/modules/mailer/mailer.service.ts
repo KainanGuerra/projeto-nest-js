@@ -16,15 +16,14 @@ export class MailerService {
   ) {}
 
   async save(data: SaveMailDTO): Promise<MailerEntity> {
-    return this.mailRepository.save(this.mailRepository.create(data));
+    return await this.mailRepository.save(this.mailRepository.create(data));
   }
 
   async sendEmail(data: SendEmailInterface): Promise<boolean> {
-    const url = 'https://api.sendgrid.com/v3/mail/send';
+    const url = `${process.env.SEND_GRID_BASE_URL}`;
     const config = {
       headers: {
-        Authorization:
-          'Bearer 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',
+        Authorization: `Bearer ${process.env.SEND_GRID_SECRET_KEY}`,
       },
     };
 
