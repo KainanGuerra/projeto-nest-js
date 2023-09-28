@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { MailerController } from './mailer.controller';
 import { MailerService } from './mailer.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { MailerEntity } from 'src/entities/mailer.entity';
+import { MailerController } from './mailer.controller';
 
 @Module({
-  controllers: [MailerController],
+  imports: [TypeOrmModule.forFeature([MailerEntity])],
   providers: [MailerService],
+  controllers: [MailerController],
 })
-export class MailerModule {}
+export class MailModule {}
