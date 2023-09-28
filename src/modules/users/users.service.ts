@@ -45,8 +45,6 @@ export class UsersService {
 
       return await this.usersRepository.save(user);
     } catch (err) {
-      console.log(err);
-      console.log('codigo: ', err.code);
       await ErrorHandler(err);
     }
   }
