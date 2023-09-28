@@ -16,8 +16,7 @@ export class PaymentsService {
 
   async executeConciliation({ user, purchase_id }) {
     console.log(user, purchase_id);
-    const paymentObject = { purchase_id };
-    await this.paymentsRepository.create(paymentObject);
+    await this.paymentsRepository.create({ purchase_id });
     return await this.purchasesService.updatePurchase({
       id: purchase_id,
       status: EPurchaseStatus.PAID,

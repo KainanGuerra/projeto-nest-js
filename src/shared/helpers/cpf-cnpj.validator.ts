@@ -7,6 +7,9 @@ import { cpf, cnpj } from 'cpf-cnpj-validator';
 @ValidatorConstraint({ name: 'cpfCnpj', async: false })
 export class CpfCnpjValidator implements ValidatorConstraintInterface {
   validate(document: string) {
+    if (/[a-zA-Z]/.test(document)) {
+      return false;
+    }
     const isCPF = cpf.isValid(document);
     const isCNPJ = cnpj.isValid(document);
     return isCPF || isCNPJ;

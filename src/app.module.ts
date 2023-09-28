@@ -7,6 +7,7 @@ import { AppController } from './app.controller';
 import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { PurchasesModule } from './modules/purchases/purchases.module';
+import { MailerModule } from './modules/mailer/mailer.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { PurchasesModule } from './modules/purchases/purchases.module';
     ProductsModule,
     PurchasesModule,
     PaymentsModule,
+    MailerModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -14,7 +14,7 @@ export class CreateUserDTO {
   @IsString()
   name: string;
 
-  @IsEmail()
+  @IsEmail({}, { message: MESSAGE_ERROR.INVALID_EMAIL })
   email: string;
 
   @IsString()
@@ -25,7 +25,7 @@ export class CreateUserDTO {
 
   @IsString()
   @Validate(CpfCnpjValidator, {
-    message: MESSAGE_ERROR.DOCUMENT_ALREADY_IN_USE,
+    message: MESSAGE_ERROR.INVALID_DOCUMENT,
   })
   document: string;
 }
