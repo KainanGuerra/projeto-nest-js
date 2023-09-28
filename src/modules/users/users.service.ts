@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { UsersEntity } from '../../entities/user.entity';
 import { CreateUserDTO } from 'src/shared/utils/dto/users/create-user.dto';
 import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
+import { AppError } from 'src/shared/handlers/AppError';
+import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
+import { MESSAGE_ERROR } from 'src/shared/helpers/messages/error-messages.helper';
 
 @Injectable()
 export class UsersService {
@@ -26,15 +29,25 @@ export class UsersService {
   }
 
   async store(data: CreateUserDTO) {
+    await this.checkIfExists(
+      'email',
+      data.email,
+      MESSAGE_ERROR.EMAIL_ALREADY_IN_USE,
+    );
+    await this.checkIfExists(
+      'document',
+      data.document,
+      MESSAGE_ERROR.DOCUMENT_ALREADY_IN_USE,
+    );
+
     try {
       const user = await this.usersRepository.create(data);
+
       return await this.usersRepository.save(user);
     } catch (err) {
-      return {
-        message: 'Error',
-        err: `${err.message}`,
-        status: 500,
-      };
+      console.log(err);
+      console.log('codigo: ', err.code);
+      await ErrorHandler(err);
     }
   }
 
@@ -46,5 +59,18 @@ export class UsersService {
   async destroy(id: string) {
     await this.usersRepository.findOneByOrFail({ id });
     return await this.usersRepository.softDelete({ id });
+  }
+
+  private async checkIfExists(
+    fieldName: string,
+    value: any,
+    errorMessage: string,
+  ) {
+    const filter = { [fieldName]: value };
+    const existingUser = await this.usersRepository.findOneBy(filter);
+
+    if (existingUser) {
+      throw new AppError(errorMessage, 400);
+    }
   }
 }

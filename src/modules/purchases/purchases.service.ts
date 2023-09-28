@@ -23,7 +23,6 @@ export class PurchasesService {
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
   ) {}
-  private readonly errorHandler = new ErrorHandler();
 
   async findAll() {
     return await this.purchasesRepository.find();
@@ -65,7 +64,7 @@ export class PurchasesService {
     try {
       return await this.productsService.listAll();
     } catch (err) {
-      this.errorHandler.attributeError(err);
+      ErrorHandler(err);
     }
   }
 
@@ -79,7 +78,7 @@ export class PurchasesService {
       }
       return await this.purchasesRepository.merge(purchase, { status });
     } catch (err) {
-      this.errorHandler.attributeError(err);
+      return ErrorHandler(err);
     }
   }
 }
