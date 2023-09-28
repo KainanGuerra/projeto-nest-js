@@ -5,13 +5,13 @@ import { Repository } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { UsersService } from '../users/users.service';
 import { HProductsFunctions } from 'src/shared/helpers/calculators/products-functions.helper';
-import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { IPurchaseProducts } from 'src/shared/utils/interfaces/purchase-products.interface';
 import { PurchaseItemsCreateInstanceDTO } from 'src/shared/utils/dto/purchases/purchase-items-create-instance.dto';
 import { EPurchaseStatus } from 'src/shared/utils/enums/purchase-status-dictionary.enum';
 import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
 import { AppError } from 'src/shared/handlers/AppError';
 import { UpdatePurchaseStatusDTO } from 'src/shared/utils/dto/purchases/update-purchase-status.dto';
+import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 
 @Injectable()
 export class PurchasesService {
@@ -22,8 +22,8 @@ export class PurchasesService {
     private readonly productsService: ProductsService,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-    private readonly errorHandler = new ErrorHandler(),
   ) {}
+  private readonly errorHandler = new ErrorHandler();
 
   async findAll() {
     return await this.purchasesRepository.find();
