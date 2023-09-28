@@ -1,5 +1,5 @@
-import { EProductsTypes } from 'src/utils/enums/products-types.enum';
-import { ESneakersBrands } from 'src/utils/enums/sneakers-brands.enum';
+import { EProductsTypes } from 'src/shared/utils/enums/products-types.enum';
+import { ESneakersBrands } from 'src/shared/utils/enums/sneakers-brands.enum';
 import { Entity } from 'typeorm';
 import { Column, PrimaryGeneratedColumn } from 'typeorm';
 

@@ -7,9 +7,9 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { hashSync } from 'bcrypt';
-import { DocumentMasker } from 'src/helpers/document.masker';
-import { EmailMasker } from 'src/helpers/email.masker';
-import { ERolesToUsers } from 'src/utils/enums/roles-to-users.enum';
+import { DocumentMasker } from 'src/shared/helpers/document.masker';
+import { EmailMasker } from 'src/shared/helpers/email.masker';
+import { ERolesToUsers } from 'src/shared/utils/enums/roles-to-users.enum';
 @Entity({ name: 'users' })
 export class UsersEntity {
   @PrimaryGeneratedColumn('uuid')

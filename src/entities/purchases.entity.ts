@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
-import { EPurchaseStatus } from 'src/utils/enums/purchase-status-dictionary.enum';
+import { EPurchaseStatus } from 'src/shared/utils/enums/purchase-status-dictionary.enum';
 
 @Entity({ name: 'purchases' })
 export class PurchasesEntity {
