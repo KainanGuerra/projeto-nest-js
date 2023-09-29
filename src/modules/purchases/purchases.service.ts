@@ -8,10 +8,10 @@ import { HProductsFunctions } from 'src/shared/helpers/calculators/products-func
 import { IPurchaseProducts } from 'src/shared/utils/interfaces/purchase-products.interface';
 import { PurchaseItemsCreateInstanceDTO } from 'src/shared/utils/dto/purchases/purchase-items-create-instance.dto';
 import { EPurchaseStatus } from 'src/shared/utils/enums/purchase-status-dictionary.enum';
-import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
 import { AppError } from 'src/shared/handlers/AppError';
 import { UpdatePurchaseStatusDTO } from 'src/shared/utils/dto/purchases/update-purchase-status.dto';
 import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
+import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
 
 @Injectable()
 export class PurchasesService {
@@ -28,10 +28,17 @@ export class PurchasesService {
     return await this.purchasesRepository.find();
   }
 
-  async store({ query, data }: IPurchaseProducts) {
+  async findMany(user: any) {
+    return await this.purchasesRepository.find({
+      where: { user: user },
+    });
+  }
+
+  async store({ data, user }: IPurchaseProducts) {
     try {
-      const { id } = query;
-      const user = await this.usersService.findOneOrFail({ id });
+      const userInstance = await this.usersService.findOneOrFail({
+        email: user.email,
+      });
       const { products, discount, deliveryAddress } = data;
       const allProducts =
         await this.productsService.findProductsByIds(products);
@@ -42,7 +49,7 @@ export class PurchasesService {
       );
       const purchaseToBeCreated: PurchaseItemsCreateInstanceDTO = {
         products,
-        discount: Number(discount),
+        discount,
         finalValue,
         deliveryAddress,
         rawValue,
@@ -50,19 +57,12 @@ export class PurchasesService {
         user,
       };
       const body = await this.purchasesRepository.create([purchaseToBeCreated]);
+      const salesCount = userInstance.sales_count + 1;
       const increasesSalesCount: UpdateUserDTO = {
-        sales_count: user.sales_count++,
+        sales_count: salesCount,
       };
       await this.usersService.update(user.id, increasesSalesCount);
       return await this.purchasesRepository.save(body);
-    } catch (err) {
-      throw new AppError(`Something went wrong: ${err.message}`, 400);
-    }
-  }
-
-  async findAllProducts() {
-    try {
-      return await this.productsService.listAll();
     } catch (err) {
       ErrorHandler(err);
     }

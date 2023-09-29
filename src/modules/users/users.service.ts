@@ -51,9 +51,10 @@ export class UsersService {
 
   async update(id: string, data: UpdateUserDTO) {
     const user = await this.usersRepository.findOneByOrFail({ id });
-    this.usersRepository.merge(user, data);
-    return this.usersRepository.save(user);
+    await this.usersRepository.merge(user, data);
+    return await this.usersRepository.save(user);
   }
+
   async destroy(id: string) {
     await this.usersRepository.findOneByOrFail({ id });
     return await this.usersRepository.softDelete({ id });
