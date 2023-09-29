@@ -87,13 +87,18 @@ export class PurchasesService {
   async store({ data, user }: IPurchaseProducts) {
     try {
       const userInstance = await this.getUserInstance(user.email);
-
+      let purchaseStatus = EPurchaseStatus.CREATED;
       const { products, discount, deliveryAddress } = data;
       const allProducts = await this.getAllProducts(products);
       const { rawValue, finalValue } = this.calculateFinalAndRawValue(
         discount,
         allProducts,
       );
+
+      // defines different status if user has already created first purchase
+      if (userInstance.sales_count > 0)
+        purchaseStatus = EPurchaseStatus.AWAITING_PAYMENT;
+
       const purchaseToBeCreated = this.createPurchaseItem({
         products,
         discount,
@@ -101,7 +106,7 @@ export class PurchasesService {
         deliveryAddress,
         rawValue,
         user,
-        status: EPurchaseStatus.CREATED,
+        status: purchaseStatus,
       });
       const savedPurchase = await this.savePurchase(purchaseToBeCreated);
       await this.updateUserSalesCount(
