@@ -19,7 +19,7 @@ export class PurchasesEntity {
   @Column({ type: 'decimal', default: 0 })
   discount: number;
 
-  @Column({ name: 'raw_value' })
+  @Column({ type: 'decimal', name: 'raw_value' })
   rawValue: number;
 
   @Column({ type: 'decimal', name: 'final_value' })

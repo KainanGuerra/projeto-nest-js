@@ -12,7 +12,6 @@ export class PaymentsController {
     @Query('purchase_id') purchase_id: number,
     @Req() req: any,
   ) {
-    console.log(purchase_id, req);
     return await this.paymentsService.executeConciliation({
       user: req.user,
       purchase_id,
