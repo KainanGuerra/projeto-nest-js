@@ -12,6 +12,8 @@ import { AppError } from 'src/shared/handlers/AppError';
 import { UpdatePurchaseStatusDTO } from 'src/shared/utils/dto/purchases/update-purchase-status.dto';
 import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
+import { ProductsEntity } from 'src/entities/products.entity';
+import { UsersEntity } from 'src/entities/user.entity';
 
 @Injectable()
 export class PurchasesService {
@@ -34,39 +36,39 @@ export class PurchasesService {
     });
   }
 
-  async store({ data, user }: IPurchaseProducts) {
-    try {
-      const userInstance = await this.usersService.findOneOrFail({
-        email: user.email,
-      });
-      const { products, discount, deliveryAddress } = data;
-      const allProducts =
-        await this.productsService.findProductsByIds(products);
-      const rawValue = HProductsFunctions.sumProductsValue(allProducts);
-      const finalValue = HProductsFunctions.calculateFinalValue(
-        rawValue,
-        discount,
-      );
-      const purchaseToBeCreated: PurchaseItemsCreateInstanceDTO = {
-        products,
-        discount,
-        finalValue,
-        deliveryAddress,
-        rawValue,
-        status: EPurchaseStatus.CREATED,
-        user,
-      };
-      const body = await this.purchasesRepository.create([purchaseToBeCreated]);
-      const salesCount = userInstance.sales_count + 1;
-      const increasesSalesCount: UpdateUserDTO = {
-        sales_count: salesCount,
-      };
-      await this.usersService.update(user.id, increasesSalesCount);
-      return await this.purchasesRepository.save(body);
-    } catch (err) {
-      ErrorHandler(err);
-    }
-  }
+  // async store({ data, user }: IPurchaseProducts) {
+  //   try {
+  //     const userInstance = await this.usersService.findOneOrFail({
+  //       email: user.email,
+  //     });
+  //     const { products, discount, deliveryAddress } = data;
+  //     const allProducts =
+  //       await this.productsService.findProductsByIds(products);
+  //     const rawValue = HProductsFunctions.sumProductsValue(allProducts);
+  //     const finalValue = HProductsFunctions.calculateFinalValue(
+  //       rawValue,
+  //       discount,
+  //     );
+  //     const purchaseToBeCreated: PurchaseItemsCreateInstanceDTO = {
+  //       products,
+  //       discount,
+  //       finalValue,
+  //       deliveryAddress,
+  //       rawValue,
+  //       status: EPurchaseStatus.CREATED,
+  //       user,
+  //     };
+  //     const body = await this.purchasesRepository.create([purchaseToBeCreated]);
+  //     const salesCount = userInstance.sales_count + 1;
+  //     const increasesSalesCount: UpdateUserDTO = {
+  //       sales_count: salesCount,
+  //     };
+  //     await this.usersService.update(user.id, increasesSalesCount);
+  //     return await this.purchasesRepository.save(body);
+  //   } catch (err) {
+  //     ErrorHandler(err);
+  //   }
+  // }
 
   async updatePurchase({ id, status }: UpdatePurchaseStatusDTO) {
     try {
@@ -80,5 +82,69 @@ export class PurchasesService {
     } catch (err) {
       return ErrorHandler(err);
     }
+  }
+
+  async store({ data, user }: IPurchaseProducts) {
+    try {
+      const userInstance = await this.getUserInstance(user.email);
+
+      const { products, discount, deliveryAddress } = data;
+      const allProducts = await this.getAllProducts(products);
+      const { rawValue, finalValue } = this.calculateFinalAndRawValue(
+        discount,
+        allProducts,
+      );
+      const purchaseToBeCreated = this.createPurchaseItem({
+        products,
+        discount,
+        finalValue,
+        deliveryAddress,
+        rawValue,
+        user,
+        status: EPurchaseStatus.CREATED,
+      });
+      const savedPurchase = await this.savePurchase(purchaseToBeCreated);
+      await this.updateUserSalesCount(
+        userInstance,
+        userInstance.sales_count + 1,
+      );
+      return savedPurchase;
+    } catch (err) {
+      ErrorHandler(err);
+    }
+  }
+
+  private async getUserInstance(email: string) {
+    return await this.usersService.findOneOrFail({ email });
+  }
+
+  private async getAllProducts(
+    productIds: number[],
+  ): Promise<ProductsEntity[]> {
+    return await this.productsService.findProductsByIds(productIds);
+  }
+
+  private calculateFinalAndRawValue(discount, allProducts: ProductsEntity[]) {
+    const rawValue = HProductsFunctions.sumProductsValue(allProducts);
+    return {
+      rawValue,
+      finalValue: HProductsFunctions.calculateFinalValue(rawValue, discount),
+    };
+  }
+
+  private createPurchaseItem(data: PurchaseItemsCreateInstanceDTO) {
+    return {
+      ...data,
+    };
+  }
+
+  private async savePurchase(purchase: PurchaseItemsCreateInstanceDTO) {
+    const body = await this.purchasesRepository.create([purchase]);
+    return await this.purchasesRepository.save(body);
+  }
+
+  private async updateUserSalesCount(userId: UsersEntity, salesCount: number) {
+    const increasesSalesCount: UpdateUserDTO = { sales_count: salesCount };
+    await this.usersService.update(userId.id, increasesSalesCount);
   }
 }
