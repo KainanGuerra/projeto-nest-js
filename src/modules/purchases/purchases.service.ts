@@ -36,40 +36,6 @@ export class PurchasesService {
     });
   }
 
-  // async store({ data, user }: IPurchaseProducts) {
-  //   try {
-  //     const userInstance = await this.usersService.findOneOrFail({
-  //       email: user.email,
-  //     });
-  //     const { products, discount, deliveryAddress } = data;
-  //     const allProducts =
-  //       await this.productsService.findProductsByIds(products);
-  //     const rawValue = HProductsFunctions.sumProductsValue(allProducts);
-  //     const finalValue = HProductsFunctions.calculateFinalValue(
-  //       rawValue,
-  //       discount,
-  //     );
-  //     const purchaseToBeCreated: PurchaseItemsCreateInstanceDTO = {
-  //       products,
-  //       discount,
-  //       finalValue,
-  //       deliveryAddress,
-  //       rawValue,
-  //       status: EPurchaseStatus.CREATED,
-  //       user,
-  //     };
-  //     const body = await this.purchasesRepository.create([purchaseToBeCreated]);
-  //     const salesCount = userInstance.sales_count + 1;
-  //     const increasesSalesCount: UpdateUserDTO = {
-  //       sales_count: salesCount,
-  //     };
-  //     await this.usersService.update(user.id, increasesSalesCount);
-  //     return await this.purchasesRepository.save(body);
-  //   } catch (err) {
-  //     ErrorHandler(err);
-  //   }
-  // }
-
   async updatePurchase({ id, status }: UpdatePurchaseStatusDTO) {
     try {
       const purchase = await this.purchasesRepository.findOneOrFail({
