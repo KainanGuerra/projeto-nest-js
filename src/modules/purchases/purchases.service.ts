@@ -30,7 +30,8 @@ export class PurchasesService {
     return await this.purchasesRepository.find();
   }
 
-  async findUserPurchase(user: any) {
+  async findUserPurchase
+  (user: any) {
     return await this.purchasesRepository.find({
       where: { user: user },
     });

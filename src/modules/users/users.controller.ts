@@ -28,8 +28,8 @@ export class UsersController {
   }
 
   @Post()
-  async store(@Body() body: CreateUserDTO) {
-    return await this.usersService.store(body);
+  async createUser(@Body() body: CreateUserDTO) {
+    return await this.usersService.createUser(body);
   }
 
   @Get('/id')

@@ -15,7 +15,7 @@ import { JwtStrategy } from 'src/shared/strategies/jwt.strategy';
     ConfigModule.forRoot(),
     JwtModule.register({
       privateKey: process.env.JWT_SECRET_KEY,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '1200s' },
     }),
   ],
   controllers: [AuthController],

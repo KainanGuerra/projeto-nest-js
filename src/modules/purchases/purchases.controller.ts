@@ -23,7 +23,7 @@ export class PurchasesController {
     throw new AppError(`You are not allowed to access this route`, 401);
   }
 
-  @Post('/create')
+  @Post()
   async createPurchase(
     @Body() body: PurchaseProductsPayloadDTO,
     @Req() req: any,

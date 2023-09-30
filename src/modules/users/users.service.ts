@@ -28,7 +28,7 @@ export class UsersService {
     }
   }
 
-  async store(data: CreateUserDTO) {
+  async createUser(data: CreateUserDTO) {
     await this.checkIfExists(
       'email',
       data.email,
