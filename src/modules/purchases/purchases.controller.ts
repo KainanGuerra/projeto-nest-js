@@ -4,7 +4,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { ERolesToUsers } from 'src/shared/utils/enums/roles-to-users.enum';
 import { AppError } from 'src/shared/handlers/AppError';
 import { PurchaseProductsPayloadDTO } from 'src/shared/utils/dto/purchases/purchase-items-payload.dto';
-import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 
 @UseGuards(AuthGuard('jwt'))
 @Controller('api/v1/purchases')
@@ -28,11 +27,7 @@ export class PurchasesController {
     @Body() body: PurchaseProductsPayloadDTO,
     @Req() req: any,
   ) {
-    try {
-      const payload = { data: body, user: req.user };
-      return await this.purchasesService.createPurchase(payload);
-    } catch (err) {
-      ErrorHandler(err);
-    }
+    const payload = { data: body, user: req.user };
+    return await this.purchasesService.createPurchase(payload);
   }
 }

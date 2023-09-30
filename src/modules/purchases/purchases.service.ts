@@ -12,8 +12,9 @@ import { AppError } from 'src/shared/handlers/AppError';
 import { UpdatePurchaseStatusDTO } from 'src/shared/utils/dto/purchases/update-purchase-status.dto';
 import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
-import { ProductsEntity } from 'src/entities/products.entity';
 import { UsersEntity } from 'src/entities/user.entity';
+import { TGetAllProductsReturn } from 'src/shared/utils/types/return-get-all-products.type';
+import { TCalculateRawFinalValue } from 'src/shared/utils/types/calculate-raw-final-value.type';
 
 @Injectable()
 export class PurchasesService {
@@ -30,8 +31,7 @@ export class PurchasesService {
     return await this.purchasesRepository.find();
   }
 
-  async findUserPurchase
-  (user: any) {
+  async findUserPurchase(user: any) {
     return await this.purchasesRepository.find({
       where: { user: user },
     });
@@ -43,7 +43,11 @@ export class PurchasesService {
         where: id,
       });
       if (purchase.status != EPurchaseStatus.AWAITING_PAYMENT) {
-        throw new AppError(`The purchase with id ${id} has been `, 400);
+        console.log(id, status);
+        throw new AppError(
+          `The purchase with id ${id} is on the incorrect status for conciliation `,
+          400,
+        );
       }
       return await this.purchasesRepository.merge(purchase, { status });
     } catch (err) {
@@ -63,13 +67,14 @@ export class PurchasesService {
       const { products, discount, deliveryAddress } = data;
 
       // Get all products from database filtering by id.
-      const allProducts = await this.getAllProducts(products);
+      const { productsFound, missingIds } = await this.getAllProducts(products);
 
       // Calculate raw value and final value of the purchase.
-      const { rawValue, finalValue } = this.calculateFinalAndRawValue(
+      const { rawValue, finalValue } = this.calculateFinalAndRawValue({
         discount,
-        allProducts,
-      );
+        productsFound,
+        missingIds,
+      });
 
       // defines different status if user has already created first purchase
       if (userInstance.sales_count > 0)
@@ -91,7 +96,7 @@ export class PurchasesService {
       );
       return savedPurchase;
     } catch (err) {
-      ErrorHandler(err);
+      throw err;
     }
   }
 
@@ -101,12 +106,19 @@ export class PurchasesService {
 
   private async getAllProducts(
     productIds: number[],
-  ): Promise<ProductsEntity[]> {
+  ): Promise<TGetAllProductsReturn> {
     return await this.productsService.findProductsByIds(productIds);
   }
 
-  private calculateFinalAndRawValue(discount, allProducts: ProductsEntity[]) {
-    const rawValue = HProductsFunctions.sumProductsValue(allProducts);
+  private calculateFinalAndRawValue({
+    discount,
+    productsFound,
+    missingIds,
+  }: TCalculateRawFinalValue) {
+    if (missingIds.length > 0 ? true : false) {
+      throw new AppError(`Products were not found: ${missingIds}`, 400);
+    }
+    const rawValue = HProductsFunctions.sumProductsValue(productsFound);
     return {
       rawValue,
       finalValue: HProductsFunctions.calculateFinalValue(rawValue, discount),

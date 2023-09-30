@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductsEntity } from 'src/entities/products.entity';
-import { AppError } from 'src/shared/handlers/AppError';
-import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { HFilterFormatter } from 'src/shared/helpers/filter-format-query.helper';
 import { CreateProductDTO } from 'src/shared/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/shared/utils/dto/products/update-product.dto';
@@ -49,26 +47,24 @@ export class ProductsService {
   }
 
   async findProductsByIds(ids: number[]) {
-    try
-    {
+    try {
       const productsFound = await this.productsRepository
         .createQueryBuilder('products')
         .select()
         .whereInIds(ids)
         .getMany();
-      console.log(productsFound)
-      const foundIds = productsFound.map((product) => product.id);
-      const missingIds = ids.filter((id) => !foundIds.includes(id.toString()));
-      console.log(missingIds)
-      console.log(`Kainan pediu = ${foundIds}`)
-      console.log(typeof foundIds)
 
-      if (missingIds.length > 0) {
-        throw new Error(`Products with the following IDs were not found: ${missingIds}`);
-      }
-      return productsFound;
-    }catch(error){
-      ErrorHandler(error)
+      const foundIds = productsFound.map((product) => product.id);
+      const missingIds = ids.filter((element) => {
+        const foundIdsFormatted = foundIds.toString();
+        return foundIdsFormatted.indexOf(element.toString()) == -1;
+      });
+      return {
+        productsFound,
+        missingIds,
+      };
+    } catch (err) {
+      throw err;
     }
   }
 
