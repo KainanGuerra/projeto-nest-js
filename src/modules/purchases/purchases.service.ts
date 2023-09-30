@@ -26,11 +26,11 @@ export class PurchasesService {
     private readonly usersService: UsersService,
   ) {}
 
-  async findAll() {
+  async find() {
     return await this.purchasesRepository.find();
   }
 
-  async findMany(user: any) {
+  async findUserPurchase(user: any) {
     return await this.purchasesRepository.find({
       where: { user: user },
     });
@@ -50,12 +50,21 @@ export class PurchasesService {
     }
   }
 
-  async store({ data, user }: IPurchaseProducts) {
+  async createPurchase({ data, user }: IPurchaseProducts) {
     try {
+      // Get user informations by email.
       const userInstance = await this.getUserInstance(user.email);
+
+      // Define the purchase status about to be create.
       let purchaseStatus = EPurchaseStatus.CREATED;
+
+      // Put each information from body request on a constant.
       const { products, discount, deliveryAddress } = data;
+
+      // Get all products from database filtering by id.
       const allProducts = await this.getAllProducts(products);
+
+      // Calculate raw value and final value of the purchase.
       const { rawValue, finalValue } = this.calculateFinalAndRawValue(
         discount,
         allProducts,

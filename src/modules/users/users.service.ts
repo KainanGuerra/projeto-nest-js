@@ -15,7 +15,7 @@ export class UsersService {
     private readonly usersRepository: Repository<UsersEntity>,
   ) {}
 
-  async findAll() {
+  async find() {
     return await this.usersRepository.find({ select: ['id', 'email', 'name'] });
   }
   async findOneOrFail(conditions: { id?: string; email?: string }) {

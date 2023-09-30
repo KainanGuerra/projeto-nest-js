@@ -22,9 +22,9 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthGuard('jwt'))
-  @Get('/list')
-  async findAll() {
-    return this.usersService.findAll();
+  @Get()
+  async find() {
+    return this.usersService.find();
   }
 
   @Post()

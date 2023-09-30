@@ -14,15 +14,15 @@ export class ProductsService {
     private readonly productsRepository: Repository<ProductsEntity>,
   ) {}
 
-  async listAll() {
+  async find() {
     return await this.productsRepository.find();
   }
 
-  async find(id: any) {
+  async findById(id: any) {
     return await this.productsRepository.findOneOrFail({ where: { id } });
   }
 
-  async create(data: CreateProductDTO) {
+  async createProduct(data: CreateProductDTO) {
     try {
       const product = await this.productsRepository.create(data);
       return await this.productsRepository.save(product);

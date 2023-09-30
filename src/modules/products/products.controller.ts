@@ -21,13 +21,13 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Get()
-  async listAll() {
-    return await this.productsService.listAll();
+  async find() {
+    return await this.productsService.find();
   }
 
-  @Get('find')
-  async find(@Query('id') id: number) {
-    return await this.productsService.find(id);
+  @Get('id')
+  async findById(@Query('id') id: number) {
+    return await this.productsService.findById(id);
   }
 
   @Get('filter')
@@ -41,7 +41,7 @@ export class ProductsController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   async create(@Body() body: CreateProductDTO) {
-    return await this.productsService.create(body);
+    return await this.productsService.createProduct(body);
   }
   @UseGuards(AuthGuard('jwt'))
   @Put()

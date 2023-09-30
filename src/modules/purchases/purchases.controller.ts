@@ -12,14 +12,14 @@ export class PurchasesController {
   constructor(private readonly purchasesService: PurchasesService) {}
 
   @Get('/find-many')
-  async findMany(@Req() req: any) {
-    return this.purchasesService.findMany(req.user);
+  async findUserPurchase(@Req() req: any) {
+    return this.purchasesService.findUserPurchase(req.user);
   }
 
   @Get()
   async find(@Req() req: any) {
     if (req.user.role === ERolesToUsers.ADMIN)
-      return this.purchasesService.findAll();
+      return this.purchasesService.find();
     throw new AppError(`You are not allowed to access this route`, 401);
   }
 
@@ -30,7 +30,7 @@ export class PurchasesController {
   ) {
     try {
       const payload = { data: body, user: req.user };
-      return await this.purchasesService.store(payload);
+      return await this.purchasesService.createPurchase(payload);
     } catch (err) {
       ErrorHandler(err);
     }
