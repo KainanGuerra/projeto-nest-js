@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   Put,
   Query,
@@ -16,6 +15,8 @@ import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateUserDTO } from 'src/shared/utils/dto/users/create-user.dto';
 import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
+import { AppError } from 'src/shared/handlers/AppError';
+import { AuthorizationHeaders } from 'src/shared/handlers/AuthorizationHeader';
 
 @Controller('api/v1/users')
 export class UsersController {
@@ -30,6 +31,13 @@ export class UsersController {
   @Post()
   async createUser(@Body() body: CreateUserDTO) {
     return await this.usersService.createUser(body);
+  }
+
+  @Post('/admin')
+  async createUserAdmin(@Body() body: CreateUserDTO, @Req() req: any) {
+    if (req.headers['inner-authorization'] == process.env.INNER_AUTH)
+      return await this.usersService.createUserAdmin(body);
+    else throw new AppError('Unauthorized', 401);
   }
 
   @Get('/id')
@@ -51,14 +59,14 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Put(':id')
-  async update(@Param('id') id: string, @Body() body: UpdateUserDTO) {
+  async update(@Query('id') id: string, @Body() body: UpdateUserDTO) {
     return await this.usersService.update(id, body);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async destroy(@Param('id') id: string) {
+  async destroy(@Query('id') id: string, @Req() req: any) {
+    AuthorizationHeaders.innerAuthCheck(req);
     return this.usersService.destroy(id);
   }
 }

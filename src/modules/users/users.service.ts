@@ -9,6 +9,7 @@ import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { MESSAGE_ERROR } from 'src/shared/helpers/messages/error-messages.helper';
 import { mapUserEntityToResponse } from 'src/shared/utils/mappers/user-validate-token.mapper';
 import { IReturnUserTokenMapped } from 'src/shared/utils/interfaces/return-user-token-validate.interface';
+import { ERolesToUsers } from 'src/shared/utils/enums/roles-to-users.enum';
 
 @Injectable()
 export class UsersService {
@@ -59,6 +60,30 @@ export class UsersService {
 
     try {
       const user = await this.usersRepository.create(data);
+
+      return await this.usersRepository.save(user);
+    } catch (err) {
+      await ErrorHandler(err);
+    }
+  }
+
+  async createUserAdmin(data: CreateUserDTO) {
+    await this.checkIfExists(
+      'email',
+      data.email,
+      MESSAGE_ERROR.EMAIL_ALREADY_IN_USE,
+    );
+    await this.checkIfExists(
+      'document',
+      data.document,
+      MESSAGE_ERROR.DOCUMENT_ALREADY_IN_USE,
+    );
+    const payload = {
+      ...data,
+      role: ERolesToUsers.ADMIN,
+    };
+    try {
+      const user = await this.usersRepository.create(payload);
 
       return await this.usersRepository.save(user);
     } catch (err) {

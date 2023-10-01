@@ -3,18 +3,17 @@ import {
   Controller,
   Delete,
   Get,
-  Param,
   Post,
   Put,
   Query,
-  UseGuards,
+  Req,
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from '@nestjs/passport';
 import { IFilterProductsByParams } from 'src/shared/utils/interfaces/filter-products.interface';
 import { CreateProductDTO } from 'src/shared/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/shared/utils/dto/products/update-product.dto';
+import { AuthorizationHeaders } from 'src/shared/handlers/AuthorizationHeader';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -38,19 +37,23 @@ export class ProductsController {
     return await this.productsService.filter(query);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async create(@Body() body: CreateProductDTO) {
+  async create(@Body() body: CreateProductDTO, @Req() req: any) {
+    AuthorizationHeaders.innerAuthCheck(req);
     return await this.productsService.createProduct(body);
   }
-  @UseGuards(AuthGuard('jwt'))
   @Put()
-  async update(@Param('id') id: number, @Body() body: UpdateProductDTO) {
+  async update(
+    @Query('id') id: number,
+    @Body() body: UpdateProductDTO,
+    @Req() req: any,
+  ) {
+    AuthorizationHeaders.innerAuthCheck(req);
     return await this.productsService.update(id, body);
   }
-  @UseGuards(AuthGuard('jwt'))
   @Delete()
-  async delete(@Param('id') id: number) {
+  async delete(@Query('id') id: number, @Req() req: any) {
+    AuthorizationHeaders.innerAuthCheck(req);
     return await this.productsService.delete(id);
   }
 }
