@@ -18,10 +18,4 @@ export class AuthController {
   async validate(@Body() body: TValidateUserBody) {
     return await this.authService.validateUser(body);
   }
-
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get('user')
-  // async getUserByToken(@Req() req: any) {
-  //   return req.user;
-  // }
 }

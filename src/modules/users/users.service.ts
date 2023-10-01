@@ -8,6 +8,7 @@ import { AppError } from 'src/shared/handlers/AppError';
 import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { MESSAGE_ERROR } from 'src/shared/helpers/messages/error-messages.helper';
 import { mapUserEntityToResponse } from 'src/shared/utils/mappers/user-validate-token.mapper';
+import { IReturnUserTokenMapped } from 'src/shared/utils/interfaces/return-user-token-validate.interface';
 
 @Injectable()
 export class UsersService {
@@ -19,12 +20,26 @@ export class UsersService {
   async find() {
     return await this.usersRepository.find({ select: ['id', 'email', 'name'] });
   }
-  async findOneOrFail(conditions: { id?: string; email?: string }) {
+  async findUserByToken(conditions: {
+    id?: string;
+    email?: string;
+  }): Promise<IReturnUserTokenMapped> {
     try {
       const user = await this.usersRepository.findOneByOrFail({
         ...conditions,
       });
       return mapUserEntityToResponse(user);
+    } catch (err) {
+      throw new NotFoundException(err.message);
+    }
+  }
+
+  async findOneOrFail(conditions: { id?: string; email?: string }) {
+    try {
+      const user = await this.usersRepository.findOneByOrFail({
+        ...conditions,
+      });
+      return user;
     } catch (err) {
       throw new NotFoundException(err.message);
     }

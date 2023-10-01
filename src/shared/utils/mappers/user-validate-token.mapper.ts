@@ -1,6 +1,9 @@
 import { UsersEntity } from 'src/entities/user.entity';
+import { IReturnUserTokenMapped } from '../interfaces/return-user-token-validate.interface';
 
-export const mapUserEntityToResponse = (user: UsersEntity) => {
+export const mapUserEntityToResponse = (
+  user: UsersEntity,
+): IReturnUserTokenMapped => {
   const {
     email,
     masked_document,

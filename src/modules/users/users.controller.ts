@@ -39,6 +39,12 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get('/token')
+  async findUserByToken(@Req() req: any) {
+    return await this.usersService.findUserByToken({ id: req.user.id });
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/validate')
   async show(@Req() req: any) {
     return await this.usersService.findOneOrFail({ id: req.user.id });
   }
