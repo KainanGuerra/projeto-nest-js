@@ -2,11 +2,16 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
   Put,
   Query,
   Req,
+  UploadedFile,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
@@ -14,6 +19,7 @@ import { IFilterProductsByParams } from 'src/shared/utils/interfaces/filter-prod
 import { CreateProductDTO } from 'src/shared/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/shared/utils/dto/products/update-product.dto';
 import { AuthorizationHeaders } from 'src/shared/handlers/AuthorizationHeader';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -38,8 +44,14 @@ export class ProductsController {
   }
 
   @Post()
-  async create(@Body() body: CreateProductDTO, @Req() req: any) {
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() body: CreateProductDTO,
+    @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
     AuthorizationHeaders.innerAuthCheck(req);
+    console.log(file);
     return await this.productsService.createProduct(body);
   }
   @Put()
@@ -55,5 +67,26 @@ export class ProductsController {
   async delete(@Query('id') id: number, @Req() req: any) {
     AuthorizationHeaders.innerAuthCheck(req);
     return await this.productsService.delete(id);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async upload(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new FileTypeValidator({ fileType: 'image/*' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ) {
+    const response = await this.productsService.upload(file);
+    return {
+      link: response,
+      status: 201,
+      message: 'Image uploaded sucessfully',
+    };
   }
 }
