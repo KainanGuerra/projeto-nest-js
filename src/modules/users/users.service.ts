@@ -7,6 +7,7 @@ import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
 import { AppError } from 'src/shared/handlers/AppError';
 import { ErrorHandler } from 'src/shared/handlers/ErrorHandler';
 import { MESSAGE_ERROR } from 'src/shared/helpers/messages/error-messages.helper';
+import { mapUserEntityToResponse } from 'src/shared/utils/mappers/user-validate-token.mapper';
 
 @Injectable()
 export class UsersService {
@@ -20,9 +21,10 @@ export class UsersService {
   }
   async findOneOrFail(conditions: { id?: string; email?: string }) {
     try {
-      return await this.usersRepository.findOneByOrFail({
+      const user = await this.usersRepository.findOneByOrFail({
         ...conditions,
       });
+      return mapUserEntityToResponse(user);
     } catch (err) {
       throw new NotFoundException(err.message);
     }
