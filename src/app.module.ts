@@ -8,6 +8,7 @@ import { UsersModule } from './modules/users/users.module';
 import { ProductsModule } from './modules/products/products.module';
 import { PurchasesModule } from './modules/purchases/purchases.module';
 import { MailerModule } from './modules/mailer/mailer.module';
+import { S3Module } from './providers/S3/S3Module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MailerModule } from './modules/mailer/mailer.module';
     PurchasesModule,
     PaymentsModule,
     MailerModule,
+    S3Module,
   ],
   controllers: [AppController],
   providers: [],

@@ -2,19 +2,24 @@ import {
   Body,
   Controller,
   Delete,
+  FileTypeValidator,
   Get,
-  Param,
+  MaxFileSizeValidator,
+  ParseFilePipe,
   Post,
   Put,
   Query,
-  UseGuards,
+  Req,
+  UploadedFile,
+  UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { AuthGuard } from '@nestjs/passport';
 import { IFilterProductsByParams } from 'src/shared/utils/interfaces/filter-products.interface';
 import { CreateProductDTO } from 'src/shared/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/shared/utils/dto/products/update-product.dto';
+import { AuthorizationHeaders } from 'src/shared/handlers/AuthorizationHeader';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -38,19 +43,58 @@ export class ProductsController {
     return await this.productsService.filter(query);
   }
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
-  async create(@Body() body: CreateProductDTO) {
+  @UseInterceptors(FileInterceptor('file'))
+  async create(
+    @Body() body: CreateProductDTO,
+    @Req() req: any,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    AuthorizationHeaders.innerAuthCheck(req);
+    console.log(file);
     return await this.productsService.createProduct(body);
   }
-  @UseGuards(AuthGuard('jwt'))
   @Put()
-  async update(@Param('id') id: number, @Body() body: UpdateProductDTO) {
+  async update(
+    @Query('id') id: number,
+    @Body() body: UpdateProductDTO,
+    @Req() req: any,
+  ) {
+    AuthorizationHeaders.innerAuthCheck(req);
     return await this.productsService.update(id, body);
   }
-  @UseGuards(AuthGuard('jwt'))
   @Delete()
-  async delete(@Param('id') id: number) {
+  async delete(@Query('id') id: number, @Req() req: any) {
+    AuthorizationHeaders.innerAuthCheck(req);
     return await this.productsService.delete(id);
+  }
+
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async upload(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [
+          new MaxFileSizeValidator({ maxSize: 1000000 }),
+          new FileTypeValidator({ fileType: 'image/*' }),
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+    @Query('id') id: number,
+    @Req() req: any,
+  ) {
+    try {
+      await this.productsService.findById(id);
+      await AuthorizationHeaders.innerAuthCheck(req);
+      const response = await this.productsService.upload(file, id);
+      return {
+        link: response,
+        status: 201,
+        message: 'Image uploaded sucessfully',
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 }

@@ -1,6 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductsEntity } from 'src/entities/products.entity';
+import { S3Provider } from 'src/providers/S3/S3Provider';
+import { SaveFormatDTO } from 'src/providers/S3/models/S3formatDTO';
 import { HFilterFormatter } from 'src/shared/helpers/filter-format-query.helper';
 import { CreateProductDTO } from 'src/shared/utils/dto/products/create-product.dto';
 import { UpdateProductDTO } from 'src/shared/utils/dto/products/update-product.dto';
@@ -12,6 +14,8 @@ export class ProductsService {
   constructor(
     @InjectRepository(ProductsEntity)
     private readonly productsRepository: Repository<ProductsEntity>,
+    @Inject(forwardRef(() => S3Provider))
+    private readonly s3Service: S3Provider,
   ) {}
 
   async find() {
@@ -19,7 +23,15 @@ export class ProductsService {
   }
 
   async findById(id: any) {
-    return await this.productsRepository.findOneOrFail({ where: { id } });
+    try {
+      const productFound = await this.productsRepository.findOneOrFail({
+        where: { id },
+      });
+      return productFound;
+    } catch (err) {
+      console.log(err.message);
+      throw err;
+    }
   }
 
   async createProduct(data: CreateProductDTO) {
@@ -99,5 +111,20 @@ export class ProductsService {
       totalDocs: productsFiltered[1],
       docs: productsFiltered,
     };
+  }
+
+  async upload(file: Express.Multer.File, id: number) {
+    const bucketInfo: SaveFormatDTO = {
+      Bucket: 'upload-products-photos',
+      ACL: 'public-read',
+      Key: `products-supply-photos-${Date.now()}-${file.size}.jpg`,
+      ContentType: 'image/*',
+      Body: file.buffer,
+    };
+
+    const urlUploaded = await this.s3Service.saveInS3(bucketInfo);
+    await this.update(id, { photo: urlUploaded });
+
+    return urlUploaded;
   }
 }
