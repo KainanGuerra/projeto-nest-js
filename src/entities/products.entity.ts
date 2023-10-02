@@ -22,4 +22,7 @@ export class ProductsEntity {
 
   @Column()
   color: string;
+
+  @Column({ nullable: true })
+  photo: string;
 }

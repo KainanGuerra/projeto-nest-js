@@ -75,18 +75,26 @@ export class ProductsController {
     @UploadedFile(
       new ParseFilePipe({
         validators: [
-          new MaxFileSizeValidator({ maxSize: 100000 }),
+          new MaxFileSizeValidator({ maxSize: 1000000 }),
           new FileTypeValidator({ fileType: 'image/*' }),
         ],
       }),
     )
     file: Express.Multer.File,
+    @Query('id') id: number,
+    @Req() req: any,
   ) {
-    const response = await this.productsService.upload(file);
-    return {
-      link: response,
-      status: 201,
-      message: 'Image uploaded sucessfully',
-    };
+    try {
+      await this.productsService.findById(id);
+      await AuthorizationHeaders.innerAuthCheck(req);
+      const response = await this.productsService.upload(file, id);
+      return {
+        link: response,
+        status: 201,
+        message: 'Image uploaded sucessfully',
+      };
+    } catch (err) {
+      throw err;
+    }
   }
 }

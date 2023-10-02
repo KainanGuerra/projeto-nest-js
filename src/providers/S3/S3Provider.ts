@@ -80,7 +80,7 @@ export class S3Provider implements S3ProviderDTO {
   public async saveInS3(bucket: SaveFormatDTO): Promise<string> {
     try {
       const bucketExists = await this.checkIfBucketExists(bucket.Bucket);
-
+      console.log(bucketExists);
       if (!bucketExists)
         await this.createBucket({ Bucket: bucket.Bucket, ACL: bucket.ACL });
       await this.s3.putObject(bucket);
@@ -90,10 +90,7 @@ export class S3Provider implements S3ProviderDTO {
       );
       return url;
     } catch (err) {
-      throw new AppError(
-        `Error while trying to upload user image: ${err}`,
-        500,
-      );
+      throw err;
     }
   }
 }

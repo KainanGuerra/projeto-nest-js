@@ -23,7 +23,15 @@ export class ProductsService {
   }
 
   async findById(id: any) {
-    return await this.productsRepository.findOneOrFail({ where: { id } });
+    try {
+      const productFound = await this.productsRepository.findOneOrFail({
+        where: { id },
+      });
+      return productFound;
+    } catch (err) {
+      console.log(err.message);
+      throw err;
+    }
   }
 
   async createProduct(data: CreateProductDTO) {
@@ -105,14 +113,18 @@ export class ProductsService {
     };
   }
 
-  async upload(file: Express.Multer.File) {
+  async upload(file: Express.Multer.File, id: number) {
     const bucketInfo: SaveFormatDTO = {
       Bucket: 'upload-products-photos',
       ACL: 'public-read',
-      Key: `products-supply-photos-${Date.now()}.jpg`,
+      Key: `products-supply-photos-${Date.now()}-${file.size}.jpg`,
       ContentType: 'image/*',
       Body: file.buffer,
     };
-    return await this.s3Service.saveInS3(bucketInfo);
+
+    const urlUploaded = await this.s3Service.saveInS3(bucketInfo);
+    await this.update(id, { photo: urlUploaded });
+
+    return urlUploaded;
   }
 }
