@@ -43,7 +43,6 @@ export class PurchasesService {
         where: id,
       });
       if (purchase.status != EPurchaseStatus.AWAITING_PAYMENT) {
-        console.log(id, status);
         throw new AppError(
           `The purchase with id ${id} is on the incorrect status for conciliation `,
           400,

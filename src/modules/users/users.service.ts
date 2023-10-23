@@ -10,6 +10,7 @@ import { MESSAGE_ERROR } from 'src/shared/helpers/messages/error-messages.helper
 import { mapUserEntityToResponse } from 'src/shared/utils/mappers/user-validate-token.mapper';
 import { IReturnUserTokenMapped } from 'src/shared/utils/interfaces/return-user-token-validate.interface';
 import { ERolesToUsers } from 'src/shared/utils/enums/roles-to-users.enum';
+import { CreateUserDeliveryAddressDTO } from 'src/shared/utils/dto/users/create-delivery-address.dto';
 
 @Injectable()
 export class UsersService {
@@ -112,6 +113,47 @@ export class UsersService {
 
     if (existingUser) {
       throw new AppError(errorMessage, 400);
+    }
+  }
+
+  async createUserDeliveryAddress(
+    body: CreateUserDeliveryAddressDTO,
+    req: any,
+  ) {
+    try {
+      const user = await this.usersRepository.findOneByOrFail({
+        id: req.user.id,
+      });
+      if (!user.delivery_addresses) {
+        user.delivery_addresses = [];
+      }
+
+      const newId = user.delivery_addresses.length + 1;
+
+      body.id = newId;
+
+      user.delivery_addresses.push(body);
+
+      return await this.usersRepository.save(user);
+    } catch (err) {
+      console.log(err);
+      throw err;
+    }
+  }
+  async deleteDeliveryAddress(query: any, req: any) {
+    try {
+      const idToBeDeleted = query.id;
+      const user = await this.usersRepository.findOneByOrFail({
+        id: req.user.id,
+      });
+      if (user.delivery_addresses) {
+        user.delivery_addresses = user.delivery_addresses.filter((address) => {
+          return address.id !== +idToBeDeleted;
+        });
+      }
+      return this.usersRepository.save(user);
+    } catch (err) {
+      throw err;
     }
   }
 }
