@@ -20,5 +20,8 @@ export class UpdateProductDTO {
   color?: string;
 
   @IsString()
+  size?: string;
+
+  @IsString()
   photo?: string;
 }

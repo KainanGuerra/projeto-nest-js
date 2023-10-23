@@ -1,9 +1,11 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { UsersEntity } from './user.entity';
 import { EPurchaseStatus } from 'src/shared/utils/enums/purchase-status-dictionary.enum';
@@ -18,6 +20,12 @@ export class PurchasesEntity {
 
   @Column({ type: 'decimal', default: 0 })
   discount: number;
+
+  @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ name: 'updated_at', type: 'timestamp with time zone' })
+  updatedAt: Date;
 
   @Column({ type: 'decimal', name: 'raw_value' })
   rawValue: number;
