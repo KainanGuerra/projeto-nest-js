@@ -17,4 +17,7 @@ export class CreateProductDTO {
 
   @IsString()
   color: string;
+
+  @IsString()
+  size: string;
 }

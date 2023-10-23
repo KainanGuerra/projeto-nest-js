@@ -25,4 +25,8 @@ export const AuthorizationHeaders = {
       throw new AppError('Invalid auth token', 401);
     }
   },
+
+  async rejectUserClient(request: any) {
+    if (request.user.role !== 'ADMIN') throw new AppError('Unauthorized', 401);
+  },
 };

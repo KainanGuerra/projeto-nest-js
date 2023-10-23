@@ -40,9 +40,8 @@ export class ProductsService {
       return await this.productsRepository.save(product);
     } catch (err) {
       return {
-        message: 'Error',
-        err: `${err.message}`,
-        status: 500,
+        message: err.message,
+        status: 400,
       };
     }
   }

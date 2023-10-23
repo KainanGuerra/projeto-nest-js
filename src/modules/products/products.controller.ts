@@ -11,6 +11,7 @@ import {
   Query,
   Req,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
   ValidationPipe,
 } from '@nestjs/common';
@@ -20,6 +21,7 @@ import { CreateProductDTO } from 'src/shared/utils/dto/products/create-product.d
 import { UpdateProductDTO } from 'src/shared/utils/dto/products/update-product.dto';
 import { AuthorizationHeaders } from 'src/shared/handlers/AuthorizationHeader';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('api/v1/products')
 export class ProductsController {
@@ -43,32 +45,31 @@ export class ProductsController {
     return await this.productsService.filter(query);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post()
-  @UseInterceptors(FileInterceptor('file'))
-  async create(
-    @Body() body: CreateProductDTO,
-    @Req() req: any,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    AuthorizationHeaders.innerAuthCheck(req);
-    console.log(file);
+  async create(@Body() body: CreateProductDTO, @Req() req: any) {
+    await AuthorizationHeaders.rejectUserClient(req);
     return await this.productsService.createProduct(body);
   }
+
+  @UseGuards(AuthGuard('jwt'))
   @Put()
   async update(
     @Query('id') id: number,
     @Body() body: UpdateProductDTO,
     @Req() req: any,
   ) {
-    AuthorizationHeaders.innerAuthCheck(req);
+    await AuthorizationHeaders.rejectUserClient(req);
     return await this.productsService.update(id, body);
   }
+  @UseGuards(AuthGuard('jwt'))
   @Delete()
   async delete(@Query('id') id: number, @Req() req: any) {
-    AuthorizationHeaders.innerAuthCheck(req);
+    await AuthorizationHeaders.rejectUserClient(req);
     return await this.productsService.delete(id);
   }
 
+  @UseGuards(AuthGuard('jwt'))
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
@@ -84,9 +85,9 @@ export class ProductsController {
     @Query('id') id: number,
     @Req() req: any,
   ) {
+    await AuthorizationHeaders.rejectUserClient(req);
     try {
       await this.productsService.findById(id);
-      await AuthorizationHeaders.innerAuthCheck(req);
       const response = await this.productsService.upload(file, id);
       return {
         link: response,
