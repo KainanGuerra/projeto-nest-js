@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Put,
   Query,
@@ -17,6 +18,7 @@ import { CreateUserDTO } from 'src/shared/utils/dto/users/create-user.dto';
 import { UpdateUserDTO } from 'src/shared/utils/dto/users/update-user.dto';
 import { AppError } from 'src/shared/handlers/AppError';
 import { AuthorizationHeaders } from 'src/shared/handlers/AuthorizationHeader';
+import { CreateUserDeliveryAddressDTO } from 'src/shared/utils/dto/users/create-delivery-address.dto';
 
 @Controller('api/v1/users')
 export class UsersController {
@@ -68,5 +70,20 @@ export class UsersController {
   async destroy(@Query('id') id: string, @Req() req: any) {
     AuthorizationHeaders.innerAuthCheck(req);
     return this.usersService.destroy(id);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('address')
+  async createUserDeliveryAddress(
+    @Body() body: CreateUserDeliveryAddressDTO,
+    @Req() req: any,
+  ) {
+    return await this.usersService.createUserDeliveryAddress(body, req);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Patch('address')
+  async deleteUserDeliveryAddress(@Query() query: any, @Req() req: any) {
+    return await this.usersService.deleteDeliveryAddress(query, req);
   }
 }

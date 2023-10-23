@@ -10,6 +10,7 @@ import { hashSync } from 'bcrypt';
 import { DocumentMasker } from 'src/shared/helpers/document.masker';
 import { EmailMasker } from 'src/shared/helpers/email.masker';
 import { ERolesToUsers } from 'src/shared/utils/enums/roles-to-users.enum';
+import { CreateUserDeliveryAddressDTO } from 'src/shared/utils/dto/users/create-delivery-address.dto';
 @Entity({ name: 'users' })
 export class UsersEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -38,6 +39,9 @@ export class UsersEntity {
 
   @Column()
   masked_document: string;
+
+  @Column('jsonb', { nullable: true })
+  delivery_addresses: CreateUserDeliveryAddressDTO[];
 
   @Column()
   masked_email: string;
