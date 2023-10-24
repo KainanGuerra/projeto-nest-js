@@ -24,7 +24,7 @@ export class ProductsEntity {
   type: EProductsTypes;
 
   @Column({ nullable: true })
-  brand: ESneakersBrands;
+  brand?: ESneakersBrands;
 
   @Column()
   color: string;

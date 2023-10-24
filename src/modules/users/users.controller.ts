@@ -73,6 +73,12 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard('jwt'))
+  @Get('address')
+  async listUserDeliveryAddress(@Req() req: any) {
+    return await this.usersService.listUserDeliveryAddress(req);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Post('address')
   async createUserDeliveryAddress(
     @Body() body: CreateUserDeliveryAddressDTO,
