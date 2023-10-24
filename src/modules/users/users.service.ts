@@ -116,6 +116,17 @@ export class UsersService {
     }
   }
 
+  async listUserDeliveryAddress(req: any) {
+    try {
+      const user = await this.usersRepository.findOneByOrFail({
+        id: req.user.id,
+      });
+      return user.delivery_addresses;
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async createUserDeliveryAddress(
     body: CreateUserDeliveryAddressDTO,
     req: any,

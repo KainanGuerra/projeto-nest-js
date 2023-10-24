@@ -13,7 +13,7 @@ export class CreateProductDTO {
   type: EProductsTypes;
 
   @IsString()
-  brand: ESneakersBrands;
+  brand?: ESneakersBrands;
 
   @IsString()
   color: string;
