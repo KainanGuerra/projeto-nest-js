@@ -89,7 +89,7 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch('address')
-  async deleteUserDeliveryAddress(@Query() query: any, @Req() req: any) {
-    return await this.usersService.deleteDeliveryAddress(query, req);
+  async deleteUserDeliveryAddress(@Query('id') id: any, @Req() req: any) {
+    return await this.usersService.deleteDeliveryAddress(id, req);
   }
 }

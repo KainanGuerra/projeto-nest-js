@@ -14,7 +14,7 @@ export class MailerEntity {
   @Column({ name: 'destination_name', nullable: false })
   destinationName: string;
 
-  @Column({ name: 'destination_adress', nullable: false })
+  @Column({ name: 'destination_address', nullable: false })
   destinationAddress: string;
 
   @Column({ name: 'due_date', type: 'timestamp', nullable: false })
