@@ -151,15 +151,14 @@ export class UsersService {
       throw err;
     }
   }
-  async deleteDeliveryAddress(query: any, req: any) {
+  async deleteDeliveryAddress(id: any, req: any) {
     try {
-      const idToBeDeleted = query.id;
       const user = await this.usersRepository.findOneByOrFail({
         id: req.user.id,
       });
       if (user.delivery_addresses) {
         user.delivery_addresses = user.delivery_addresses.filter((address) => {
-          return address.id !== +idToBeDeleted;
+          return address.id !== +id;
         });
       }
       return this.usersRepository.save(user);

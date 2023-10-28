@@ -83,7 +83,13 @@ export class S3Provider implements S3ProviderDTO {
       console.log(bucketExists);
       if (!bucketExists)
         await this.createBucket({ Bucket: bucket.Bucket, ACL: bucket.ACL });
-      await this.s3.putObject(bucket);
+      await this.s3.putObject({
+        Bucket: bucket.Bucket,
+        ACL: 'public-read',
+        Body: bucket.Body,
+        Key: bucket.Key,
+        ContentType: bucket.ContentType,
+      });
       const url = `https://${bucket.Bucket}.s3.amazonaws.com/${bucket.Key}`;
       console.log(
         `Object was uploaded to bucket: ${bucket.Bucket}. Check it on the url: ${url}`,
