@@ -5,7 +5,9 @@ import {
   FileTypeValidator,
   Get,
   MaxFileSizeValidator,
+  Param,
   ParseFilePipe,
+  Patch,
   Post,
   Put,
   Query,
@@ -70,7 +72,7 @@ export class ProductsController {
   }
 
   @UseGuards(AuthGuard('jwt'))
-  @Post('upload')
+  @Patch('upload/:id')
   @UseInterceptors(FileInterceptor('file'))
   async upload(
     @UploadedFile(
@@ -82,7 +84,7 @@ export class ProductsController {
       }),
     )
     file: Express.Multer.File,
-    @Query('id') id: number,
+    @Param('id') id: number,
     @Req() req: any,
   ) {
     await AuthorizationHeaders.rejectUserClient(req);
