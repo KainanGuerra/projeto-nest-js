@@ -16,5 +16,5 @@ export class PurchaseProductsPayloadDTO {
   discount: number;
 
   @IsString()
-  deliveryAddress: string;
+  deliveryAddress?: string;
 }

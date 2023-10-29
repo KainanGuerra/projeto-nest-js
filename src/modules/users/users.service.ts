@@ -20,7 +20,19 @@ export class UsersService {
   ) {}
 
   async find() {
-    return await this.usersRepository.find({ select: ['id', 'email', 'name'] });
+    return await this.usersRepository.find({
+      where: { role: ERolesToUsers.CLIENT },
+      select: [
+        'id',
+        'name',
+        'createdAt',
+        'email',
+        'document',
+        'role',
+        'sales_count',
+        'delivery_addresses',
+      ],
+    });
   }
   async findUserByToken(conditions: {
     id?: string;

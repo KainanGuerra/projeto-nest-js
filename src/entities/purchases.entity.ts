@@ -19,7 +19,7 @@ export class PurchasesEntity {
   products: number[];
 
   @Column({ type: 'decimal', default: 0 })
-  discount: number;
+  discount?: number;
 
   @CreateDateColumn({ name: 'created_at', type: 'timestamp with time zone' })
   createdAt: Date;
@@ -36,8 +36,8 @@ export class PurchasesEntity {
   @Column()
   status: EPurchaseStatus;
 
-  @Column({ name: 'delivery_address' })
-  deliveryAddress: string;
+  @Column({ name: 'delivery_address', default: 'In-store pickup' })
+  deliveryAddress?: string;
 
   @ManyToOne(() => UsersEntity)
   @JoinColumn({ name: 'client_id', referencedColumnName: 'id' })
