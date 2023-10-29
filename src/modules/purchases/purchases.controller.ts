@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { PurchasesService } from './purchases.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ERolesToUsers } from 'src/shared/utils/enums/roles-to-users.enum';
@@ -20,6 +29,21 @@ export class PurchasesController {
     if (req.user.role === ERolesToUsers.ADMIN)
       return this.purchasesService.find();
     throw new AppError(`You are not allowed to access this route`, 401);
+  }
+
+  @Get('shop-car')
+  async getUserShopCar(@Req() req: any) {
+    return this.purchasesService.getUserShopCar(req);
+  }
+
+  @Patch('shop-car/:id')
+  async addToShopCar(@Param('id') id: any, @Req() req: any) {
+    return this.purchasesService.updateShopCar(id, req);
+  }
+
+  @Patch('remove-item/:id')
+  async removeItemFromShopCar(@Param('id') id: any, @Req() req: any) {
+    return this.purchasesService.removeItemFromShopCar(id, req);
   }
 
   @Post()

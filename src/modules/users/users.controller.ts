@@ -26,7 +26,8 @@ export class UsersController {
 
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  async find() {
+  async find(@Req() req: any) {
+    await AuthorizationHeaders.rejectUserClient(req);
     return this.usersService.find();
   }
 
