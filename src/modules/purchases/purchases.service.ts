@@ -1,4 +1,10 @@
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PurchasesEntity } from 'src/entities/purchases.entity';
 import { Repository } from 'typeorm';
@@ -54,9 +60,70 @@ export class PurchasesService {
     }
   }
 
+  async getUserShopCar(req: any) {
+    const shopCar = await this.purchasesRepository.findOne({
+      where: {
+        user: { id: req.user.id },
+        status: EPurchaseStatus.CREATED,
+      },
+    });
+    if (!shopCar) return [];
+    return shopCar;
+  }
+  async updateShopCar(productId: any, req: any) {
+    const shopCar = await this.purchasesRepository.findOne({
+      where: {
+        user: { id: req.user.id },
+        status: EPurchaseStatus.CREATED,
+      },
+    });
+    if (!shopCar) {
+      return this.createPurchase({
+        data: {
+          discount: 0,
+          products: [productId],
+          deliveryAddress: 'In-store pickup',
+        },
+        user: req.user,
+      });
+    } else {
+      shopCar.products.push(productId);
+    }
+    return this.purchasesRepository.save(shopCar);
+  }
+
+  async removeItemFromShopCar(productId: any, req: any) {
+    try {
+      const shopCar = await this.purchasesRepository.findOne({
+        where: {
+          user: { id: req.user.id },
+          status: EPurchaseStatus.CREATED,
+        },
+      });
+
+      if (!shopCar) {
+        throw new NotFoundException('Shopping cart not found');
+      }
+
+      const productIndex = shopCar.products.indexOf(+productId);
+
+      if (productIndex === -1) {
+        throw new NotFoundException('Product not found in the shopping cart');
+      }
+
+      shopCar.products.splice(productIndex, 1);
+
+      return await this.purchasesRepository.save(shopCar);
+    } catch (error) {
+      throw new BadRequestException(
+        `Error removing product from shopping cart ${error}`,
+      );
+    }
+  }
+
   async createPurchase({ data, user }: IPurchaseProducts) {
     try {
-      // Get user informations by email.
+      // Get user information by email.
       const userInstance = await this.getUserInstance(user.email);
 
       // Define the purchase status about to be create.
