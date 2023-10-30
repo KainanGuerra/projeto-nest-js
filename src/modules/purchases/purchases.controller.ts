@@ -36,6 +36,11 @@ export class PurchasesController {
     return this.purchasesService.getUserShopCar(req);
   }
 
+  @Get('shop-car/products')
+  async getProductsFromShopCar(@Req() req: any) {
+    return this.purchasesService.getProductsFromShopCar(req);
+  }
+
   @Patch('shop-car/:id')
   async addToShopCar(@Param('id') id: any, @Req() req: any) {
     return this.purchasesService.updateShopCar(id, req);

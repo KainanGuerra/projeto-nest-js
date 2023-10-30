@@ -60,16 +60,29 @@ export class PurchasesService {
     }
   }
 
-  async getUserShopCar(req: any) {
+  async getUserShopCar(req: any): Promise<PurchasesEntity> {
     const shopCar = await this.purchasesRepository.findOne({
       where: {
         user: { id: req.user.id },
         status: EPurchaseStatus.CREATED,
       },
     });
-    if (!shopCar) return [];
+    if (!shopCar) return {} as PurchasesEntity;
     return shopCar;
   }
+
+  async getProductsFromShopCar(req: any) {
+    const { products } = await this.getUserShopCar(req);
+    const { productsFound } =
+      await this.productsService.findProductsByIds(products);
+    const idToEntityMap = productsFound.reduce((acc, entity) => {
+      acc[entity.id] = entity;
+      return acc;
+    }, {});
+    const arrayOfEntities = products.map((id) => idToEntityMap[id]);
+    return arrayOfEntities;
+  }
+
   async updateShopCar(productId: any, req: any) {
     const shopCar = await this.purchasesRepository.findOne({
       where: {
