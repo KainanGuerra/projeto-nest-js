@@ -112,7 +112,7 @@ export class UsersService {
 
   async destroy(id: string) {
     await this.usersRepository.findOneByOrFail({ id });
-    return await this.usersRepository.softDelete({ id });
+    return await this.usersRepository.delete({ id });
   }
 
   private async checkIfExists(

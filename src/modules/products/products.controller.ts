@@ -65,10 +65,10 @@ export class ProductsController {
     return await this.productsService.update(id, body);
   }
   @UseGuards(AuthGuard('jwt'))
-  @Delete()
-  async delete(@Query('id') id: number, @Req() req: any) {
+  @Delete('/:id')
+  async delete(@Param('id') id: string, @Req() req: any) {
     await AuthorizationHeaders.rejectUserClient(req);
-    return await this.productsService.delete(id);
+    return await this.productsService.delete(+id);
   }
 
   @UseGuards(AuthGuard('jwt'))

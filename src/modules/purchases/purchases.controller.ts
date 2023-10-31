@@ -47,7 +47,7 @@ export class PurchasesController {
   }
 
   @Patch('remove-item/:id')
-  async removeItemFromShopCar(@Param('id') id: any, @Req() req: any) {
+  async removeItemFromShopCar(@Param('id') id: string, @Req() req: any) {
     return this.purchasesService.removeItemFromShopCar(id, req);
   }
 

@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Put,
@@ -66,10 +67,11 @@ export class UsersController {
     return await this.usersService.update(id, body);
   }
 
-  @Delete(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async destroy(@Query('id') id: string, @Req() req: any) {
-    AuthorizationHeaders.innerAuthCheck(req);
+  async destroy(@Param('id') id: string, @Req() req: any) {
+    await AuthorizationHeaders.rejectUserClient(req);
     return this.usersService.destroy(id);
   }
 

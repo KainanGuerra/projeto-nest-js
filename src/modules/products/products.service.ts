@@ -54,7 +54,7 @@ export class ProductsService {
 
   async delete(id: any) {
     await this.productsRepository.findOneByOrFail({ id });
-    return this.productsRepository.softDelete({ id });
+    return this.productsRepository.delete({ id });
   }
 
   async findProductsByIds(ids: number[]) {

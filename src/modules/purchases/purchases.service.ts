@@ -129,7 +129,7 @@ export class PurchasesService {
       return await this.purchasesRepository.save(shopCar);
     } catch (error) {
       throw new BadRequestException(
-        `Error removing product from shopping cart ${error}`,
+        `Error removing product from shop cart ${error}`,
       );
     }
   }
